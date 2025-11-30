@@ -69,7 +69,6 @@ public class Wordle {
             }
             System.out.println();
         }
-        System.out.println();
     }
 
     // Returns true if all entries in resultRow are 'G'.
