@@ -86,18 +86,19 @@ public class Wordle {
 
         int WORD_LENGTH = 5;
         int MAX_ATTEMPTS = 6;
-
+        
         // Read dictionary
         String[] dict = readDictionary("dictionary.txt");
 
         // Choose secret word
-        String secret = chooseSecretWord(dict);
+        // We convert the secret to UpperCase immediately so it matches the guesses later
+        String secret = chooseSecretWord(dict).toUpperCase();
 
-        // Prepare 2D arrays
+        // Prepare 2D arrays (Rows = Attempts, Columns = Word Length)
         char[][] guesses = new char[MAX_ATTEMPTS][WORD_LENGTH];
         char[][] results = new char[MAX_ATTEMPTS][WORD_LENGTH];
 
-        In inp = new In();
+        In inp = new In(); 
 
         int attempt = 0;
         boolean won = false;
@@ -110,34 +111,31 @@ public class Wordle {
             // Loop until you read a valid guess
             while (!valid) {
                 System.out.print("Enter your guess (5-letter word): ");
-
-                guess = inp.readString().toUpperCase();
-
+                
+                // Read string and force to uppercase
+                guess = inp.readString().toUpperCase(); 
+                
                 // CHECK 1: Check if word exists in dictionary
-                // (Since you don't have a helper method, we do it here)
                 boolean wordExists = false;
                 for (int i = 0; i < dict.length; i++) {
-                    if (dict[i].equals(guess)) {
+                    // FIX: Use equalsIgnoreCase so "HELPS" matches "helps"
+                    if (dict[i].equalsIgnoreCase(guess)) { 
                         wordExists = true;
                         break;
                     }
                 }
 
                 // CHECK 2: Validate length and existence
-                if (guess.length() != WORD_LENGTH || !wordExists) {
+                if (guess.length() != WORD_LENGTH || !wordExists) { 
                     System.out.println("Invalid word. Please try again.");
                 } else {
                     valid = true;
                 }
             }
 
-            // Store guess
+            // Store guess and compute feedback
             storeGuess(guess, guesses, attempt);
-
-            // ERROR FIXED HERE: 
-            // 1. Swapped order to (secret, guess) to match your method definition.
-            // 2. Passed 'results[attempt]' (the specific row) instead of 'results' (the whole grid).
-            computeFeedback(secret, guess, results[attempt]);
+            computeFeedback(secret, guess, results[attempt]); 
 
             // Print board
             printBoard(guesses, results, attempt);
@@ -151,6 +149,7 @@ public class Wordle {
             attempt++;
         }
 
+        // Game Over logic
         if (!won) {
             System.out.println("You ran out of guesses.");
             System.out.println("The correct word was: " + secret);
