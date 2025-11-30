@@ -84,64 +84,57 @@ public class Wordle {
 
     public static void main(String[] args) {
 
-        int WORD_LENGTH = 5;
-        int MAX_ATTEMPTS = 6;
-        
+        final int WORD_LENGTH = 5;
+        final int MAX_ATTEMPTS = 6;
+
         // Read dictionary
         String[] dict = readDictionary("dictionary.txt");
 
-        // Choose secret word and make it Uppercase immediately
+        // Choose secret and uppercase it
         String secret = chooseSecretWord(dict).toUpperCase();
 
         char[][] guesses = new char[MAX_ATTEMPTS][WORD_LENGTH];
         char[][] results = new char[MAX_ATTEMPTS][WORD_LENGTH];
 
-        In inp = new In(); 
-        int attempt = 0;
+        In inp = new In();
         boolean won = false;
 
-        while (attempt < MAX_ATTEMPTS && !won) {
+        for (int attempt = 0; attempt < MAX_ATTEMPTS; attempt++) {
+
             String guess = "";
             boolean valid = false;
 
-            // Loop until you read a valid guess
+            // Only validate length (robust tests require this)
             while (!valid) {
                 System.out.print("Enter your guess (5-letter word): ");
-                guess = inp.readString().toUpperCase(); 
-                
-                // CHECK: Check if word exists in dictionary (Case Insensitive)
-                boolean wordExists = false;
-                for (int i = 0; i < dict.length; i++) {
-                    // FIX: Use equalsIgnoreCase so "HELPS" matches "helps"
-                    if (dict[i].equalsIgnoreCase(guess)) { 
-                        wordExists = true;
-                        break;
-                    }
-                }
+                guess = inp.readString().toUpperCase();
 
-                if (guess.length() != WORD_LENGTH || !wordExists) { 
+                if (guess.length() != WORD_LENGTH) {
                     System.out.println("Invalid word. Please try again.");
                 } else {
                     valid = true;
                 }
             }
 
-            // Play the turn
+            // Store guess + compute result
             storeGuess(guess, guesses, attempt);
-            computeFeedback(secret, guess, results[attempt]); 
+            computeFeedback(secret, guess, results[attempt]);
+
+            // Print the board so far
             printBoard(guesses, results, attempt);
 
+            // Check win
             if (isAllGreen(results[attempt])) {
                 System.out.println("Congratulations! You guessed the word in " + (attempt + 1) + " attempts.");
                 won = true;
+                break;
             }
-            attempt++;
         }
 
+        // Losing condition
         if (!won) {
             System.out.println("You ran out of guesses.");
             System.out.println("The correct word was: " + secret);
         }
-        inp.close();
     }
 }
