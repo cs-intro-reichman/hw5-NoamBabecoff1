@@ -133,7 +133,8 @@ public class Wordle {
         // Losing condition
         if (!won) {
             System.out.println("You ran out of guesses.");
-            System.out.println("The correct word was: " + secret);
+            // REMOVED THE COLON BELOW
+            System.out.println("The correct word was " + secret); 
         }
     }
 }
